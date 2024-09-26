@@ -1,4 +1,4 @@
-package com.SyncApplication;
+package com.syncapplication;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
