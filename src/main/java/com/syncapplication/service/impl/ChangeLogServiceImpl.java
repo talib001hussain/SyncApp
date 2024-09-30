@@ -1,29 +1,46 @@
 package com.syncapplication.service.impl;
 
 import com.syncapplication.service.ChangeLogService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-@AllArgsConstructor
-@Service
 @Slf4j
+@RequiredArgsConstructor
+@Service
 public class ChangeLogServiceImpl implements ChangeLogService {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Override
     public void createChangeLogTableAndTrigger(String tableName) {
+        // Check if ChangeLog table exists using INFORMATION_SCHEMA.TABLES
+        String checkTableExistsSql = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'ChangeLog'";
+        Integer tableCount = jdbcTemplate.queryForObject(checkTableExistsSql, Integer.class);
+
         // Create ChangeLog table if it doesn't exist
-        String createTableSql = "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ChangeLog' AND xtype='U') " +
-                "CREATE TABLE ChangeLog (" +
-                "ChangeID INT IDENTITY(1,1) PRIMARY KEY, " +
-                "TableName VARCHAR(255), " +
-                "ChangeType VARCHAR(10), " +
-                "RecordID BIGINT, " +
-                "ChangeTime DATETIME DEFAULT GETDATE())";
-        jdbcTemplate.execute(createTableSql);
+        if (tableCount == 0) {
+            String createTableSql = "CREATE TABLE ChangeLog (" +
+                    "ChangeID INT IDENTITY(1,1) PRIMARY KEY, " +
+                    "TableName NVARCHAR(255), " +
+                    "ChangeType NVARCHAR(10), " +
+                    "RecordID BIGINT, " +
+                    "ChangeTime DATETIME DEFAULT GETDATE())";
+
+            // Log the SQL statement
+            log.info("Executing SQL: {}", createTableSql);
+
+            // Execute the CREATE TABLE command
+            try {
+                jdbcTemplate.execute(createTableSql);
+            } catch (BadSqlGrammarException e) {
+                log.error("Error executing create table SQL {}", e.toString());
+                throw e;
+            }
+        } else {
+            log.info("ChangeLog table already exists.");
+        }
 
         // Create Trigger for the specified table
         String createTriggerSql = String.format(
@@ -50,6 +67,19 @@ public class ChangeLogServiceImpl implements ChangeLogService {
                         "END;",
                 tableName, tableName, tableName, tableName, tableName
         );
+
+        // Log the trigger creation SQL
+        log.info("Executing SQL for creating trigger: {}", createTriggerSql);
+
+        // Execute the trigger creation
         jdbcTemplate.execute(createTriggerSql);
     }
+
+
+
+
+
+
+
+
 }

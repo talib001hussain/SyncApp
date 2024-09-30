@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+
 @Slf4j
 @RequiredArgsConstructor
 @Component
@@ -18,7 +19,7 @@ public class LegacyChangeScheduler {
 
     private final ChangeLogService changeLogService;
 
-    private final List<String> monitoredTables = List.of("WAYFB01", "ANOTHER_TABLE"); // Add more table names as needed
+    private final List<String> monitoredTables = List.of("WAYFB01"); // Add more table names as needed
 
     @Scheduled(fixedRate = 900000) // 15 minutes in milliseconds
     public void checkForChanges() {

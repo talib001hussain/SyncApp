@@ -7,30 +7,31 @@ import com.syncapplication.repository.DebtorsRepository;
 import com.syncapplication.service.DebtorsService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@AllArgsConstructor
-@Service
 @Slf4j
+@RequiredArgsConstructor
+@Service
 public class DebtorsServiceImpl implements DebtorsService {
 
 
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    private final KafkaTemplate<String, DebtorsDTO> kafkaTemplate;
 
 
-    private KafkaTemplate<String, DebtorsDTO> kafkaTemplate;
+    private final DebtorsRepository debtorsRepository;
 
 
-    private DebtorsRepository debtorsRepository;
-
-
-    private DebtorsMapper debtorsMapper;
+    private final DebtorsMapper debtorsMapper;
 
     private static final String TOPIC = "debtors_topic";
 
@@ -49,11 +50,15 @@ public class DebtorsServiceImpl implements DebtorsService {
             if (debtor != null) {
                 DebtorsDTO debtorsDTO = debtorsMapper.toDTO(debtor);
 
+                // Log the type of change
+                log.info("Processed {} for record ID: {}", changeType, recordId);
+
                 // Send to Kafka topic
                 kafkaTemplate.send(TOPIC, debtorsDTO);
 
                 // Save to PostgreSQL
                 debtorsRepository.save(debtor);
+
             }
 
             // Remove processed change log entry
