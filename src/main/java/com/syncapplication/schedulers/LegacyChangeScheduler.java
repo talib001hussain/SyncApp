@@ -19,9 +19,9 @@ public class LegacyChangeScheduler {
 
     private final ChangeLogService changeLogService;
 
-    private final List<String> monitoredTables = List.of("WAYFB01"); // Add more table names as needed
+    private final List<String> monitoredTables = List.of("WAYFB01", "WAYFC01"); // Add more table names as needed
 
-    @Scheduled(fixedRate = 900000) // 15 minutes in milliseconds
+    @Scheduled(fixedRate = 5000) // will run after 5 seconds
     public void checkForChanges() {
         for (String tableName : monitoredTables) {
             changeLogService.createChangeLogTableAndTrigger(tableName);

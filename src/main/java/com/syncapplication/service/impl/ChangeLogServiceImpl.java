@@ -75,11 +75,4 @@ public class ChangeLogServiceImpl implements ChangeLogService {
         jdbcTemplate.execute(createTriggerSql);
     }
 
-
-
-
-
-
-
-
 }

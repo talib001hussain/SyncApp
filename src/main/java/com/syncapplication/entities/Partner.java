@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @Builder
@@ -44,5 +46,6 @@ public class Partner {
     private boolean isTransporter;
 
     private String orgId;
+    private LocalDateTime timeStamp;
 
 }

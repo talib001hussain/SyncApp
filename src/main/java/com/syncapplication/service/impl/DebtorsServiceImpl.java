@@ -1,16 +1,14 @@
 package com.syncapplication.service.impl;
 
-import com.syncapplication.dtos.legacycobas.DebtorsDTO;
 import com.syncapplication.entities.Debtors;
-import com.syncapplication.mapper.DebtorsMapper;
+import com.syncapplication.entities.Partner;
+import com.syncapplication.mapper.PartnerMapper;
 import com.syncapplication.repository.DebtorsRepository;
 import com.syncapplication.service.DebtorsService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -25,13 +23,13 @@ public class DebtorsServiceImpl implements DebtorsService {
 
     private final EntityManager entityManager;
 
-    private final KafkaTemplate<String, DebtorsDTO> kafkaTemplate;
+    private final KafkaTemplate<String, Partner> kafkaTemplate;
 
 
     private final DebtorsRepository debtorsRepository;
 
 
-    private final DebtorsMapper debtorsMapper;
+    private final PartnerMapper partnerMapper;
 
     private static final String TOPIC = "debtors_topic";
 
@@ -48,13 +46,13 @@ public class DebtorsServiceImpl implements DebtorsService {
             // Fetch the record from the relevant table
             Debtors debtor = fetchRecordFromTable(tableName, recordId);
             if (debtor != null) {
-                DebtorsDTO debtorsDTO = debtorsMapper.toDTO(debtor);
+                Partner partnerFromDebtors = partnerMapper.toPartnerFromDebtors(debtor);
 
                 // Log the type of change
                 log.info("Processed {} for record ID: {}", changeType, recordId);
 
                 // Send to Kafka topic
-                kafkaTemplate.send(TOPIC, debtorsDTO);
+                kafkaTemplate.send(TOPIC, partnerFromDebtors);
 
                 // Save to PostgreSQL
                 debtorsRepository.save(debtor);
