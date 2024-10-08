@@ -30,6 +30,5 @@ public class CreditorsDTO {
     private Short language;
     private String bankAccount;
     private String bicNumber;
-    private Short multiverseExactSync;
     private LocalDateTime timeStamp;
 }

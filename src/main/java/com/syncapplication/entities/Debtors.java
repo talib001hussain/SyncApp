@@ -1,17 +1,16 @@
 package com.syncapplication.entities;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.*;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Entity
 @Table(name = "WAYFB01")
 public class Debtors {
@@ -61,11 +60,5 @@ public class Debtors {
 
     @Column(name = "DEBITEURNR")
     private String debtorNumber;
-
-    @Column(name = "MULTIVERS_EXACT_SYNC")
-    private Short multiverseExactSync;
-
-    @Column(name = "INGANGSDATUM")
-    private LocalDateTime timeStamp;
 }
 

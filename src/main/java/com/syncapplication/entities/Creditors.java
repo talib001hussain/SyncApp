@@ -66,10 +66,4 @@ public class Creditors {
     @Column(name = "BICNR")
     private String bicNumber;
 
-    @Column(name = "MULTIVERS_EXACT_SYNC")
-    private Short multiverseExactSync;
-
-    @Column(name = "DATUM_LANDBOUW")
-    private Short timeStamp;
-
 }

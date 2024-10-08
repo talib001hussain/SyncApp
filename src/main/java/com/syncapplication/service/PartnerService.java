@@ -1,5 +1,5 @@
 package com.syncapplication.service;
 
-public interface DebtorsService {
+public interface PartnerService {
     void processChanges();
 }

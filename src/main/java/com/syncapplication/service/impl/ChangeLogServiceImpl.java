@@ -20,7 +20,7 @@ public class ChangeLogServiceImpl implements ChangeLogService {
         Integer tableCount = jdbcTemplate.queryForObject(checkTableExistsSql, Integer.class);
 
         // Create ChangeLog table if it doesn't exist
-        if (tableCount == 0) {
+        if (tableCount == null || tableCount == 0) {
             String createTableSql = "CREATE TABLE ChangeLog (" +
                     "ChangeID INT IDENTITY(1,1) PRIMARY KEY, " +
                     "TableName NVARCHAR(255), " +
@@ -28,10 +28,8 @@ public class ChangeLogServiceImpl implements ChangeLogService {
                     "RecordID BIGINT, " +
                     "ChangeTime DATETIME DEFAULT GETDATE())";
 
-            // Log the SQL statement
             log.info("Executing SQL: {}", createTableSql);
 
-            // Execute the CREATE TABLE command
             try {
                 jdbcTemplate.execute(createTableSql);
             } catch (BadSqlGrammarException e) {
@@ -68,11 +66,7 @@ public class ChangeLogServiceImpl implements ChangeLogService {
                 tableName, tableName, tableName, tableName, tableName
         );
 
-        // Log the trigger creation SQL
         log.info("Executing SQL for creating trigger: {}", createTriggerSql);
-
-        // Execute the trigger creation
         jdbcTemplate.execute(createTriggerSql);
     }
-
 }
