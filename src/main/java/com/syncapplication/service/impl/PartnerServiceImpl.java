@@ -55,6 +55,7 @@ public class PartnerServiceImpl implements PartnerService {
                 if (creditorOptional.isPresent()) {
                     Creditors creditor = creditorOptional.get();
                     partner = partnerMapper.toPartner(creditor);
+                    partner.setCreditor(true);
                     log.info("Mapped Creditor to Partner: {}", partner);
                 }
 
@@ -64,6 +65,7 @@ public class PartnerServiceImpl implements PartnerService {
                 if (debtorOptional.isPresent()) {
                     Debtors debtor = debtorOptional.get();
                     partner = partnerMapper.toPartnerFromDebtors(debtor);
+                    partner.setDebitor(true);
                     log.info("Mapped Debtor to Partner: {}", partner);
                     // Persist or further process the Partner entity
                 }

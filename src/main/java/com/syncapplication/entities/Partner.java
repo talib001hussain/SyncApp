@@ -1,22 +1,17 @@
 package com.syncapplication.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Data
 @Builder
 public class Partner {
 
     private Long id;
-    @Column(nullable = false)
     private String partnerId;
 
-    @Column(nullable = false)
     private String name;
     private String searchCode;
     private String code;
@@ -35,14 +30,8 @@ public class Partner {
     private String bankAccountId;
     private String bankAccount;
     private String bicCode;
-
-    @Column(nullable = false)
     private boolean isCreditor;
-
-    @Column(nullable = false)
     private boolean isDebitor;
-
-    @Column(nullable = false)
     private boolean isTransporter;
 
     private String orgId;

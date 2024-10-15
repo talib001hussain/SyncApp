@@ -1,7 +1,7 @@
 package com.syncapplication.config;
 
 import com.fasterxml.jackson.databind.JsonSerializer;
-import com.syncapplication.dtos.legacycobas.DebtorsDTO;
+import com.syncapplication.entities.Partner;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +24,7 @@ public class KafkaConfig {
     private String bootstrapServers;
 
     @Bean
-    public ProducerFactory<String, DebtorsDTO> producerFactory() {
+    public ProducerFactory<String, Partner> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -33,12 +33,12 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, DebtorsDTO> kafkaTemplate() {
+    public KafkaTemplate<String, Partner> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
     @Bean
-    public KafkaOperations<String, DebtorsDTO> kafkaOperations() {
+    public KafkaOperations<String, Partner> kafkaOperations() {
         return kafkaTemplate(); // Return the KafkaTemplate as KafkaOperations
     }
 

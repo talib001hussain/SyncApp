@@ -3,11 +3,12 @@ package com.syncapplication.mapper;
 import com.syncapplication.entities.Creditors;
 import com.syncapplication.entities.Debtors;
 import com.syncapplication.entities.Partner;
+import org.mapstruct.Mapper;
 
+@Mapper(componentModel = "spring")
+public interface PartnerMapper {
 
-public class PartnerMapper {
-
-    public Partner toPartner(Creditors creditors) {
+    default Partner toPartner(Creditors creditors) {
         return Partner.builder()
                 .partnerId(creditors.getCustomerNumber())
                 .name(creditors.getName())
@@ -29,7 +30,7 @@ public class PartnerMapper {
                 .build();
     }
 
-    public Partner toPartnerFromDebtors(Debtors debtors) {
+    default Partner toPartnerFromDebtors(Debtors debtors) {
         return Partner.builder()
                 .id(debtors.getId())
                 .partnerId(debtors.getPartnerId())
