@@ -3,7 +3,6 @@ package com.syncapplication.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.*;
 
 @Data
@@ -11,7 +10,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "WAYFB01")
 public class Debtors {
 
     @Id

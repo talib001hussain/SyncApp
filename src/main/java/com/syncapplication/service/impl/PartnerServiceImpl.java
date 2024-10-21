@@ -67,7 +67,6 @@ public class PartnerServiceImpl implements PartnerService {
                     partner = partnerMapper.toPartnerFromDebtors(debtor);
                     partner.setDebitor(true);
                     log.info("Mapped Debtor to Partner: {}", partner);
-                    // Persist or further process the Partner entity
                 }
             }
             kafkaTemplate.send(appProperties.getPartnerTopic(), partner);
