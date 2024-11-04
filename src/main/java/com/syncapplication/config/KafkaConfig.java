@@ -1,5 +1,6 @@
 package com.syncapplication.config;
 
+import com.syncapplication.util.AppProperties;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import com.syncapplication.entities.Partner;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -20,14 +21,11 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
-    @Value("${kafka.bootstrap-servers}")
-    private String bootstrapServers;
-
     @Bean
     public ProducerFactory<String, Partner> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class); // Use JsonSerializer for DebtorsDTO
         return new DefaultKafkaProducerFactory<>(configProps);
     }

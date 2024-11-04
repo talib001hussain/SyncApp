@@ -50,7 +50,7 @@ public class PartnerServiceImpl implements PartnerService {
             log.info("The Operation Type is: {}", changeType);
 
             if (TableNames.CREDITORS.getTableName().equalsIgnoreCase(tableName)) {
-                Optional<Creditors> creditorOptional = creditorsRepository.findById(BigDecimal.valueOf(recordId));
+                Optional<Creditors> creditorOptional = creditorsRepository.findByRecordNumber(BigDecimal.valueOf(recordId));
 
                 if (creditorOptional.isPresent()) {
                     Creditors creditor = creditorOptional.get();
@@ -69,6 +69,7 @@ public class PartnerServiceImpl implements PartnerService {
                     log.info("Mapped Debtor to Partner: {}", partner);
                 }
             }
+            log.info("Pushing the Partner Event to Kafka. Object: {}", partner);
             kafkaTemplate.send(appProperties.getPartnerTopic(), partner);
         }
     }

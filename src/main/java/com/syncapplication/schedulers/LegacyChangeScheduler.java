@@ -22,12 +22,14 @@ public class LegacyChangeScheduler {
 
     private final List<String> monitoredTables = List.of(TableNames.CREDITORS.getTableName(), TableNames.DEBITORS.getTableName()); // Add more table names as needed
 
-    @Scheduled(fixedRate = 5000) // will run after 5 seconds
+    @Scheduled(fixedRate = 5000)
     public void checkForChanges() {
         log.info("The scheduled job has been started!");
         for (String tableName : monitoredTables) {
+            log.info("Running the SyncService for Table: {}", tableName);
             changeLogService.createChangeLogTableAndTrigger(tableName);
         }
+        log.info("Going to process the changes for Partner Entity");
         partnerService.processChanges();
         log.info("The scheduled job has been executed!");
     }

@@ -12,9 +12,6 @@ public class AppProperties {
     @Value("${spring.kafka.topic.partner}")
     private String partnerTopic;
 
-    @Value("${kafka.bootstrap-servers}")
-    private String kafkaServers;
-
     @Value("${scheduled.job.time.in.milliseconds}")
     private Long scheduledJobFixedTime;
 
