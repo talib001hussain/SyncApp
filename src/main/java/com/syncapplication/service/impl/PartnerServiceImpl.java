@@ -1,5 +1,6 @@
 package com.syncapplication.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syncapplication.TableNames;
 import com.syncapplication.util.AppProperties;
 import com.syncapplication.entities.Creditors;
@@ -10,6 +11,7 @@ import com.syncapplication.repository.CreditorsRepository;
 import com.syncapplication.repository.DebtorsRepository;
 import com.syncapplication.service.PartnerService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -34,7 +36,9 @@ public class PartnerServiceImpl implements PartnerService {
     private final PartnerMapper partnerMapper;
     private final CreditorsRepository creditorsRepository;
     private final AppProperties appProperties;
+    private final ObjectMapper objectMapper;
 
+    @SneakyThrows
     @Override
     public void processChanges() {
         // Query to get changes from ChangeLog
@@ -56,7 +60,7 @@ public class PartnerServiceImpl implements PartnerService {
                     Creditors creditor = creditorOptional.get();
                     partner = partnerMapper.toPartner(creditor);
                     partner.setCreditor(true);
-                    log.info("Mapped Creditor to Partner: {}", partner);
+                    log.info("Mapped Creditor to Partner: {}",  objectMapper.writeValueAsString(partner));
                 }
 
             } else if (TableNames.DEBITORS.getTableName().equalsIgnoreCase(tableName)) {
@@ -66,11 +70,23 @@ public class PartnerServiceImpl implements PartnerService {
                     Debtors debtor = debtorOptional.get();
                     partner = partnerMapper.toPartnerFromDebtors(debtor);
                     partner.setDebitor(true);
-                    log.info("Mapped Debtor to Partner: {}", partner);
+                    log.info("Mapped Debtor to Partner: {}", objectMapper.writeValueAsString(partner));
                 }
             }
-            log.info("Pushing the Partner Event to Kafka. Object: {}", partner);
-            kafkaTemplate.send(appProperties.getPartnerTopic(), partner);
+            try {
+                log.info("Pushing the Partner Event to Kafka. Object: {}", objectMapper.writeValueAsString(partner));
+
+                kafkaTemplate.send(appProperties.getPartnerTopic(), partner);
+
+                log.info("Successfully pushed the Partner Event to Kafka. Object: {}", objectMapper.writeValueAsString(partner));
+
+                // Delete the object from changeLog that is successfully pushed to Kafka
+                String deleteChangeLogSql = "DELETE FROM ChangeLog WHERE TableName = ? AND RecordID = ?";
+                int rowsDeleted = jdbcTemplate.update(deleteChangeLogSql, tableName, recordId);
+                log.info("Deleted {} rows from ChangeLog for Table: {}, RecordID: {}", rowsDeleted, tableName, recordId);
+            } catch (Exception ex) {
+                log.error("Some Exception occurred while pushing data to Kafka for RecordId: {} and Table: {}", recordId, tableName);
+            }
         }
     }
 }
